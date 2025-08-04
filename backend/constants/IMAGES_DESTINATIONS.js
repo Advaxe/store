@@ -1,0 +1,8 @@
+const path = require('path')
+
+const IMAGES_DESTINATIONS = {
+          utilisateurs: path.sep + 'uploads' + path.sep + 'images' + path.sep + 'utilisateurs',
+          articles: path.sep + 'uploads' + path.sep + 'images' + path.sep + 'articles',
+}
+
+module.exports = IMAGES_DESTINATIONS
