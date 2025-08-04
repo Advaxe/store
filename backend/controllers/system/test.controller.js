@@ -1,4 +1,4 @@
-const sendMail = require("../../utils/sendMail")
+const sendMail = require("../../utils/sendMail.js")
 
 const testSendMail = async (req, res) => {
           try {

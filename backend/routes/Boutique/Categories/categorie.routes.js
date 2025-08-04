@@ -1,5 +1,5 @@
 const express = require("express")
-const category_controller = require("../../../controllers/Boutique/Category.controllers")
+const category_controller = require("../../../controllers/boutique/Category.controllers")
 const category_routes=express.Router()
 /**
  * Une route qui permet de créer une catégorie

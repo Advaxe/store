@@ -1,5 +1,5 @@
 const express = require('express')
-const auth_drivers_controller = require('../../controllers/auth/auth_drivers.controller')
+const auth_drivers_controller = require('../../controllers/auth/auth_drivers.controller.js')
 const auth_drivers_routes = express.Router()
 
 /**

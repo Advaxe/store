@@ -1,5 +1,5 @@
 const express = require('express')
-const utilisateurs_controller = require('../../controllers/administration/utilisateurs.controller')
+const utilisateurs_controller = require('../../controllers/administration/utilisateurs.controller.js')
 const utilisateurs_routes = express.Router()
 
 utilisateurs_routes.post("/", utilisateurs_controller.cretaeUser)

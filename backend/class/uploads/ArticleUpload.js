@@ -1,5 +1,5 @@
-const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS");
-const Upload = require("../Upload");
+const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS.js");
+const Upload = require("../Upload.js");
 const path = require('path')
 
 class ArticleUpload extends Upload

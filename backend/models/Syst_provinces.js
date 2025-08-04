@@ -1,5 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize');
+const sequelize = require('../utils/sequerize.js');
 
 const Syst_provinces = sequelize.define("syst_provinces", {
           PROVINCE_ID: {

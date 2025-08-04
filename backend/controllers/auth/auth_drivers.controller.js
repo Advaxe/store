@@ -1,16 +1,16 @@
 const express = require('express');
-const Validation = require('../../class/Validation');
-const RESPONSE_CODES = require('../../constants/RESPONSE_CODES');
-const RESPONSE_STATUS = require('../../constants/RESPONSE_STATUS');
+const Validation = require('../../class/Validation.js');
+const RESPONSE_CODES = require('../../constants/RESPONSE_CODES.js');
+const RESPONSE_STATUS = require('../../constants/RESPONSE_STATUS.js');
 // const drivers_model = require('../../models/app/users.model');
-const { query } = require('../../utils/db');
-const generateToken = require('../../utils/generateToken');
+const { query } = require('../../utils/db.js');
+const generateToken = require('../../utils/generateToken.js');
 const md5 = require('md5');
 const moment = require("moment");
-const PROFILS = require('../../constants/PROFILS');
-const generateCode = require('../../utils/generateCode');
-const sendSMS = require('../../utils/sendSMS');
-const IMAGES_DESTINATIONS = require('../../constants/IMAGES_DESTINATIONS');
+const PROFILS = require('../../constants/PROFILS.js');
+const generateCode = require('../../utils/generateCode.js');
+const sendSMS = require('../../utils/sendSMS.js');
+const IMAGES_DESTINATIONS = require('../../constants/IMAGES_DESTINATIONS.js');
 
 
 const ECONET_PHONE_NUMBER_STARTS = ["79", "71", "76", "72"]

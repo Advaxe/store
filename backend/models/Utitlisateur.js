@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize');
-const Syst_collines = require('./Syst_collines');
+const sequelize = require('../utils/sequerize.js');
+const Syst_collines = require('./Syst_collines.js');
 
 const Utilisateur = sequelize.define("utilisateurs", {
           id: {

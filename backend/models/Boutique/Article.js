@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../../utils/sequerize');
-const Category = require('./Category');
+const sequelize = require('../../utils/sequerize.js');
+const Category = require('./Category.js');
 
 const Article= sequelize.define("article",{
 

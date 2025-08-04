@@ -1,6 +1,6 @@
 const express = require('express')
-const countries_routes = require('./countries.routes')
-const { generateMrz, getProvinces, getCommunes, getCollines, getZones, getAvenues } = require('../../controllers/system/system.controller')
+const countries_routes = require('./countries.routes.js')
+const { generateMrz, getProvinces, getCommunes, getCollines, getZones, getAvenues } = require('../../controllers/system/system.controller.js')
 const systemRouter = express.Router()
 
 systemRouter.use('/countries', countries_routes)

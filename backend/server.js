@@ -7,19 +7,19 @@ const path = require("path");
 const cors = require("cors");
 const ip = require('ip')
 const fileUpload = require("express-fileupload");
-const RESPONSE_CODES = require("./constants/RESPONSE_CODES");
-const RESPONSE_STATUS = require("./constants/RESPONSE_STATUS");
+const RESPONSE_CODES = require("./constants/RESPONSE_CODES.js");
+const RESPONSE_STATUS = require("./constants/RESPONSE_STATUS.js");
 const app = express();
-const bindUser = require("./middleware/bindUser");
+const bindUser = require("./middleware/bindUser.js");
 dotenv.config({ path: path.join(__dirname, "./.env") });
 
 const { Server } = require("socket.io");
-const authRouter = require("./routes/auth/authRouter");
-const administrationRouter = require("./routes/administration/administartionRouter");
-const systemRouter = require("./routes/system/systemRouter");
-const categoryRouter = require("./routes/Boutique/Categories/categories_provider");
-const article_router = require("./routes/Boutique/Article/articles_provider");
-const pill_router = require("./routes/Boutique/Pills/pills_provider")
+const authRouter = require("./routes/auth/authRouter.js");
+const administrationRouter = require("./routes/administration/administartionRouter.js");
+const systemRouter = require("./routes/system/systemRouter.js");
+const categoryRouter = require("./routes/Boutique/Categories/categories_provider.js");
+const article_router = require("./routes/Boutique/Article/articles_provider.js");
+const pill_router = require("./routes/Boutique/Pills/pills_provider.js")
 
 
 
