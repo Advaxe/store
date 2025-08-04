@@ -3,12 +3,10 @@ const RESPONSE_CODES = require("../../constants/RESPONSE_CODES.js");
 const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS.js");
 const Article = require("../../models/Boutique/Article.js");
 const Validation = require("../../class/Validation.js");
-const { Op , where, QueryTypes} = require("sequelize");
 const Category = require("../../models/Boutique/Category.js");
 const ArticleUpload = require("../../class/uploads/ArticleUpload.js");
 const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS.js");
 const sendMail = require("../../utils/sendMail.js");
-const sequelize = require("../../utils/sequerize.js");
 /**
  * Fonction pour inserer les donnees dans la table article
  * @param {express} req 
@@ -118,100 +116,42 @@ const findAllArticle = async(req,res)=>{
     try{
 
         const { rows = 10, first = 0, sortField, sortOrder, search } = req.query
-        const defaultSortDirection = "DESC"
-
-        const sortColumns = {
-            category: {
-                      as: "category",
-                      fields: {
-                        ID_CATEGORY: 'ID_CATEGORY',
-                        DESIGNATION: 'DESIGNATION',
-                        CREATED_AT: 'CREATED_AT',
-                      }
-            },
-            article: {
-                as: "article",
-                fields: {
-                ARTICLE_ID: 'ARTICLE_ID',
-                ID_CATEGORY: 'ID_CATEGORY',
-                NAME_ARTICLE: 'NAME_ARTICLE',
-                PRICE_ARTICLE: 'PRICE_ARTICLE',
-                CREATED_AT: 'CREATED_AT'
-                }
-      }
-  }
-  var orderColumn, orderDirection
-
-
-    // sorting
-    var sortModel;
-    if (sortField) {
-      for (let key in sortColumns) {
-        if (sortColumns[key].fields.hasOwnProperty(sortField)) {
-          sortModel = {
-            model: key,
-            as: sortColumns[key].as,
-          };
-          orderColumn = sortColumns[key].fields[sortField];
-          break;
+        const limit = parseInt(rows);
+        const skip = parseInt(first);
+        
+        // Build query
+        let query = {};
+        if (search && search.trim() !== "") {
+            query.NAME_ARTICLE = { $regex: search, $options: 'i' };
         }
-      }
-    }
-    if (!orderColumn || !sortModel) {
-      orderColumn = sortColumns.article.fields.CREATED_AT;
-      sortModel = {
-        model: "article",
-        as: sortColumns.article.as,
-      };
-    }
 
-    // ordering
-    if (sortOrder == 1) {
-      orderDirection = "ASC";
-    } else if (sortOrder == -1) {
-      orderDirection = "DESC";
-    } else {
-      orderDirection = defaultSortDirection;
-    }
-
-    // searching
-    const globalSearchColumns = ["NAME_ARTICLE","$categorie.DESIGNATION$"];
-    
-    var globalSearchWhereLike = {};
-    if (search && search.trim() != "") {
-      const searchWildCard = {};
-      globalSearchColumns.forEach((column) => {
-        searchWildCard[column] = {
-          [Op.substring]: search,
-        };
-      });
-      globalSearchWhereLike = {
-        [Op.or]: searchWildCard,
-      };
-    }
-
-    const result = await Article.findAndCountAll({
-      limit: parseInt(rows),
-      offset: parseInt(first),
-    //   order: [[sortModel, orderColumn, orderDirection]],
-      where: {
-        ...globalSearchWhereLike,
-      },
-      include: {
-        model: Category,
-        required: true,
-        as: "category"
-      }
-    });
-    res.status(RESPONSE_CODES.OK).json({
-        statusCode: RESPONSE_CODES.OK,
-        httpStatus: RESPONSE_STATUS.OK,
-        message: "Liste des articles",
-        result: {
-                  data: result.rows,
-                  totalRecords:result.count
+        // Build sort object
+        let sort = {};
+        if (sortField) {
+            sort[sortField] = sortOrder === 1 ? 1 : -1;
+        } else {
+            sort.CREATED_AT = -1; // Default sort by creation date descending
         }
-})
+
+        // Execute query with pagination
+        const [articles, totalCount] = await Promise.all([
+            Article.find(query)
+                .sort(sort)
+                .limit(limit)
+                .skip(skip)
+                .populate('ID_CATEGORY', 'NAME_CATEGORY DESCRIPTION', 'Category'),
+            Article.countDocuments(query)
+        ]);
+
+        res.status(RESPONSE_CODES.OK).json({
+            statusCode: RESPONSE_CODES.OK,
+            httpStatus: RESPONSE_STATUS.OK,
+            message: "Liste des articles",
+            result: {
+                data: articles,
+                totalRecords: totalCount
+            }
+        });
 
     }catch(error){
         console.log(error)
@@ -219,7 +159,7 @@ const findAllArticle = async(req,res)=>{
             statusCode: RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             httpStatus: RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
             message: "Erreur interne du serveur, réessayer plus tard",
-  })
+        })
     }
 };
 
@@ -234,10 +174,7 @@ const findOneArticle = async(req,res)=>{
     try{
 
         const {ARTICLE_ID}=req.params
-        const article= await Article.findOne({
-          include: { model: Category, as: "category" },
-          where: {ARTICLE_ID},
-        });
+        const article= await Article.findById(ARTICLE_ID).populate('ID_CATEGORY', 'NAME_CATEGORY DESCRIPTION', 'Category');
        
         if (article) {
           res.status(RESPONSE_CODES.OK).json({
@@ -261,7 +198,7 @@ const findOneArticle = async(req,res)=>{
             statusCode: RESPONSE_CODES.INTERNAL_SERVER_ERROR,
             httpStatus: RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
             message: "Erreur interne du serveur, réessayer plus tard",
-  })
+        })
     }
 };
 

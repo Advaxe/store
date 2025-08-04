@@ -1,35 +1,26 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../../utils/sequerize.js');
+const mongoose = require('mongoose');
 
-const Pill = sequelize.define("pill",{
-
-    ID_PILL:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
+const pillSchema = new mongoose.Schema({
+    NAME_PILL: {
+        type: String,
+        required: true,
+        maxlength: 100
     },
-
-    DESIGNATION:{
-        type: DataTypes.STRING(100),
-        allowNull: false
+    DESCRIPTION: {
+        type: String,
+        maxlength: 255
     },
-    PRICE:{
-        type: DataTypes.FLOAT,
-        allowNull: false
+    PRICE: {
+        type: Number,
+        required: true
     },
-    CREATED_AT:{
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-
+    CREATED_AT: {
+        type: Date,
+        default: Date.now
     }
-
-   
-},{
-    freezeTableName: true,
-    tableName: 'pill',
+}, {
     timestamps: false,
-})
+    collection: 'pill'
+});
 
-module.exports = Pill
+module.exports = mongoose.model('Pill', pillSchema);

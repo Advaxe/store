@@ -9,6 +9,7 @@ const ip = require('ip')
 const fileUpload = require("express-fileupload");
 const RESPONSE_CODES = require("./constants/RESPONSE_CODES.js");
 const RESPONSE_STATUS = require("./constants/RESPONSE_STATUS.js");
+const { connectDB } = require("./utils/mongodb.js");
 const app = express();
 const bindUser = require("./middleware/bindUser.js");
 dotenv.config({ path: path.join(__dirname, "./.env") });
@@ -71,5 +72,7 @@ io.on('disconnect', () => {
 })
 app.io = io
 server.listen(port, async () => {
-          console.log(`${(process.env.NODE_ENV).toUpperCase()} - Server is running on : http://${ip.address()}:${port}/`);
+          // Connect to MongoDB
+          await connectDB();
+          console.log(`${(process.env.NODE_ENV || 'development').toUpperCase()} - Server is running on : http://${ip.address()}:${port}/`);
 });
