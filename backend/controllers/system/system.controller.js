@@ -1,7 +1,7 @@
 const express = require('express')
-const RESPONSE_CODES = require('../../constants/RESPONSE_CODES')
-const RESPONSE_STATUS = require('../../constants/RESPONSE_STATUS')
-const { query } = require('../../utils/db')
+const RESPONSE_CODES = require('../../constants/RESPONSE_CODES.js')
+const RESPONSE_STATUS = require('../../constants/RESPONSE_STATUS.js')
+const { query } = require('../../utils/db.js')
 
 /**
  * Permet de recuperer tous les pays

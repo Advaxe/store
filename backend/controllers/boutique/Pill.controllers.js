@@ -1,8 +1,8 @@
 const express = require("express");
-const RESPONSE_CODES = require("../../constants/RESPONSE_CODES");
-const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS");
-const Pill = require("../../models/Boutique/Pill")
-const Validation = require("../../class/Validation");
+const RESPONSE_CODES = require("../../constants/RESPONSE_CODES.js");
+const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS.js");
+const Pill = require("../../models/Boutique/Pill.js")
+const Validation = require("../../class/Validation.js");
 const { Op } = require("sequelize");
 
 /**

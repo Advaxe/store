@@ -1,7 +1,7 @@
-const IDS_COURSE_STATUS = require( "../constants/IDS_COURSE_STATUS")
-const TIMING = require("../constants/TIMING")
-const {findDrivers} = require("../controllers/course/courses.controller")
-const { query } = require("../utils/db")
+const IDS_COURSE_STATUS = require( "../constants/IDS_COURSE_STATUS.js")
+const TIMING = require("../constants/TIMING.js")
+const {findDrivers} = require("../controllers/course/courses.controller.js")
+const { query } = require("../utils/db.js")
 
 
 /**

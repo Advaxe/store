@@ -1,14 +1,14 @@
 const express = require("express");
-const RESPONSE_CODES = require("../../constants/RESPONSE_CODES");
-const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS");
-const Article = require("../../models/Boutique/Article");
-const Validation = require("../../class/Validation");
+const RESPONSE_CODES = require("../../constants/RESPONSE_CODES.js");
+const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS.js");
+const Article = require("../../models/Boutique/Article.js");
+const Validation = require("../../class/Validation.js");
 const { Op , where, QueryTypes} = require("sequelize");
-const Category = require("../../models/Boutique/Category");
-const ArticleUpload = require("../../class/uploads/ArticleUpload");
-const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS");
-const sendMail = require("../../utils/sendMail");
-const sequelize = require("../../utils/sequerize");
+const Category = require("../../models/Boutique/Category.js");
+const ArticleUpload = require("../../class/uploads/ArticleUpload.js");
+const IMAGES_DESTINATIONS = require("../../constants/IMAGES_DESTINATIONS.js");
+const sendMail = require("../../utils/sendMail.js");
+const sequelize = require("../../utils/sequerize.js");
 /**
  * Fonction pour inserer les donnees dans la table article
  * @param {express} req 

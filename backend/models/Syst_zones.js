@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize');
-const Syst_communes = require('./Syst_communes');
+const sequelize = require('../utils/sequerize.js');
+const Syst_communes = require('./Syst_communes.js');
 
 const Syst_zones = sequelize.define("syst_zones", {
           ZONE_ID: {
