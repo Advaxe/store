@@ -47,6 +47,7 @@ const cretaeUser = async (req, res) => {
                                         date: true
                               }
                     })
+                    
                     await validation.run()
                     const isValid = await validation.isValidate()
                     if (!isValid) 
