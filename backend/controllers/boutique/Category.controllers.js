@@ -17,18 +17,18 @@ const createCategory=async(req,res)=>{
 
     try{
 
-        const{ DESIGNATION }=req.body
+        const{ NAME_CATEGORY }=req.body
         const data = { ...req.body }
 
         const validation = new Validation(data, {
-            DESIGNATION:{
+            NAME_CATEGORY:{
                 required: true,
                 length: [2, 25],
                 alpha: true
             }
 
         },{
-            DESIGNATION:{
+            NAME_CATEGORY:{
                 required: "Ce champ est obligatoire",
                 length: "La valeur doit etre entre 2 et 25 caracteres",
                 alpha: "Doit contenir des caracteres alpha Numérique"
@@ -46,7 +46,7 @@ const createCategory=async(req,res)=>{
                                         result: errors
                               })
         }
-        const result = await Category.create({ DESIGNATION });
+        const result = await Category.create({ NAME_CATEGORY });
         res.status(RESPONSE_CODES.CREATED).json({
             statusCode: RESPONSE_CODES.CREATED,
             httpStatus: RESPONSE_STATUS.CREATED,
@@ -90,7 +90,7 @@ const findAllCategory=async(req,res)=>{
         // Build search query
         let query = {};
         if (search && search.trim() !== "") {
-            query.DESIGNATION = { $regex: search, $options: 'i' };
+            query.NAME_CATEGORY = { $regex: search, $options: 'i' };
         }
 
         // Execute query with pagination
@@ -209,20 +209,20 @@ const updateCategory=async(req,res)=>{
   try{
 
     const {ID_CATEGORY}= req.params
-    const { DESIGNATION } = req.body;
+    const { NAME_CATEGORY } = req.body;
 
     const data = { ...req.body };
     const validation = new Validation(
       data,
       {
-        DESIGNATION: {
+        NAME_CATEGORY: {
           required: true,
           alpha: true,
           length: [2, 20],
         },
       },
       {
-        DESIGNATION: {
+        NAME_CATEGORY: {
           required: "Ce champ est obligatoire",
           alpha: "Doit contenir des caractères alpha numeriques",
           length: "La valeur doit être comprise 2 et 20 caractères",
@@ -242,7 +242,7 @@ const updateCategory=async(req,res)=>{
 
     const result = await Category.findByIdAndUpdate(
       ID_CATEGORY,
-      { DESIGNATION },
+      { NAME_CATEGORY },
       { new: true }
     );
     res.status(RESPONSE_CODES.CREATED).json({

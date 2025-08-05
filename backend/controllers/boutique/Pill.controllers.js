@@ -16,11 +16,11 @@ const createPill=async(req,res)=>{
 
     try{
 
-        const{ DESIGNATION,PRICE }=req.body
+        const{ NAME_PILL,PRICE }=req.body
         const data = { ...req.body }
 
         const validation = new Validation(data, {
-            DESIGNATION:{
+            NAME_PILL:{
                 required: true,
                 length: [2, 25],
                 alpha: true
@@ -32,7 +32,7 @@ const createPill=async(req,res)=>{
             }
 
         },{
-            DESIGNATION:{
+            NAME_PILL:{
                 required: "Ce champ est obligatoire",
                 length: "La valeur doit etre entre 2 et 25 caracteres",
                 alpha: "Doit contenir des caracteres alpha Numérique"
@@ -55,7 +55,7 @@ const createPill=async(req,res)=>{
                                         result: errors
                               })
         }
-        const result=await Pill.create({DESIGNATION,PRICE});
+        const result=await Pill.create({NAME_PILL,PRICE});
         res.status(RESPONSE_CODES.CREATED).json({
             statusCode: RESPONSE_CODES.CREATED,
             httpStatus: RESPONSE_STATUS.CREATED,
@@ -100,7 +100,7 @@ const findAllPill=async(req,res)=>{
         // Build search query
         let query = {};
         if (search && search.trim() !== "") {
-            query.DESIGNATION = { $regex: search, $options: 'i' };
+            query.NAME_PILL = { $regex: search, $options: 'i' };
         }
 
         // Execute query with pagination
@@ -219,13 +219,13 @@ const updatePill=async(req,res)=>{
   try{
 
     const {ID_PILL}= req.params
-    const { DESIGNATION, PRICE } = req.body;
+    const { NAME_PILL, PRICE } = req.body;
 
     const data = { ...req.body };
     const validation = new Validation(
       data,
       {
-        DESIGNATION: {
+        NAME_PILL: {
           required: true,
           alpha: true,
           length: [2, 20],
@@ -237,7 +237,7 @@ const updatePill=async(req,res)=>{
         },
       },
       {
-        DESIGNATION: {
+        NAME_PILL: {
           required: "Ce champ est obligatoire",
           alpha: "Doit contenir des caractères alpha numeriques",
           length: "La valeur doit être comprise 2 et 20 caractères",
@@ -262,7 +262,7 @@ const updatePill=async(req,res)=>{
 
     const result = await Pill.findByIdAndUpdate(
       ID_PILL,
-      { DESIGNATION, PRICE },
+      { NAME_PILL, PRICE },
       { new: true }
     );
     res.status(RESPONSE_CODES.CREATED).json({
