@@ -214,13 +214,9 @@ const deleteArticle = async(req,res)=>{
 
         const {ids}= req.body
     const itemsIds = JSON.parse(ids)
-    await Article.destroy({
-        where: {
-          ARTICLE_ID: {
-                   [Op.in]: itemsIds
-                         }
-             }
-              })
+    await Article.deleteMany({
+        _id: { $in: itemsIds }
+    })
       res.status(RESPONSE_CODES.OK).json({
         statusCode: RESPONSE_CODES.OK,
         httpStatus: RESPONSE_STATUS.OK,
@@ -302,11 +298,7 @@ const updateArticle = async(req,res)=>{
         }
 
         //Pour recuperer l'image actuel
-        const currentArticle = await Article.findByPk(ARTICLE_ID,
-          {
-            attributes: ["IMAGE"],
-
-          })
+        const currentArticle = await Article.findById(ARTICLE_ID).select('IMAGE')
 
         //Import de la classe qui va uploader les images
         const articleUpload = new ArticleUpload()
@@ -318,11 +310,10 @@ const updateArticle = async(req,res)=>{
         }
     
 
-        const result = await Article.update(
+        const result = await Article.findByIdAndUpdate(
+          ARTICLE_ID,
           { ID_CATEGORY,NAME_ARTICLE,PRICE_ARTICLE, IMAGE:filename?filename:currentArticle.IMAGE},
-          {
-            where: { ARTICLE_ID: ARTICLE_ID },
-          }
+          { new: true }
         );
         res.status(RESPONSE_CODES.CREATED).json({
           statusCode: RESPONSE_CODES.CREATED,
@@ -365,7 +356,7 @@ const getArticlesByCategory1 = async (req,res) => {
       {
         $group: {
           _id: '$category._id',
-          name: { $first: '$category.DESIGNATION' },
+          name: { $first: '$category.NAME_CATEGORY' },
           nbr: { $sum: 1 }
         }
       },
