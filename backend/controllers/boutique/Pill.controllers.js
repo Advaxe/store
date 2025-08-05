@@ -3,7 +3,6 @@ const RESPONSE_CODES = require("../../constants/RESPONSE_CODES.js");
 const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS.js");
 const Pill = require("../../models/Boutique/Pill.js")
 const Validation = require("../../class/Validation.js");
-const { Op } = require("sequelize");
 
 /**
  * Fonction pour inserer les donnees dans la table pill
@@ -76,95 +75,52 @@ const createPill=async(req,res)=>{
 }
 
 /**
- * Fonction pour lire les donnees se trouvant dans la tble category
+ * Fonction pour lire les donnees se trouvant dans la table pill
  * @param {express} req 
  * @param {express} res
- * @author Nzosaba Milka<santa.milka@mediabox.bi> 
- * @Date le 6/6/2024
+ * @author Nadvaxe<advaxe@freeti.org> 
+ * @Date le 11/09/2024
  */
-const findAllCategory=async(req,res)=>{
+const findAllPill=async(req,res)=>{
 
     try{
         const { rows = 10, first = 0, sortField, sortOrder, search } = req.query
-        const defaultSortDirection = "DESC"
+        const limit = parseInt(rows);
+        const skip = parseInt(first);
 
-        const sortColumns = {
-            category: {
-                      as: "category",
-                      fields: {
-                        ID_CATEGORY: 'ID_CATEGORY',
-                        DESIGNATION: 'DESIGNATION',
-                        CREATED_AT: 'CREATED_AT',
-                      }
+        // Build sort object
+        let sort = {};
+        if (sortField) {
+            const sortDirection = sortOrder == 1 ? 1 : -1;
+            sort[sortField] = sortDirection;
+        } else {
+            sort = { CREATED_AT: -1 }; // Default sort by creation date descending
+        }
+
+        // Build search query
+        let query = {};
+        if (search && search.trim() !== "") {
+            query.DESIGNATION = { $regex: search, $options: 'i' };
+        }
+
+        // Execute query with pagination
+        const [pills, totalCount] = await Promise.all([
+            Pill.find(query)
+                .sort(sort)
+                .limit(limit)
+                .skip(skip),
+            Pill.countDocuments(query)
+        ]);
+
+        res.status(RESPONSE_CODES.OK).json({
+            statusCode: RESPONSE_CODES.OK,
+            httpStatus: RESPONSE_STATUS.OK,
+            message: "Liste des pills",
+            result: {
+                data: pills,
+                totalRecords: totalCount
             }
-  }
-  var orderColumn, orderDirection
-
-
-    // sorting
-    var sortModel;
-    if (sortField) {
-      for (let key in sortColumns) {
-        if (sortColumns[key].fields.hasOwnProperty(sortField)) {
-          sortModel = {
-            model: key,
-            as: sortColumns[key].as,
-          };
-          orderColumn = sortColumns[key].fields[sortField];
-          break;
-        }
-      }
-    }
-    if (!orderColumn || !sortModel) {
-      orderColumn = sortColumns.category.fields.CREATED_AT;
-      sortModel = {
-        model: "category",
-        as: sortColumns.category.as,
-      };
-    }
-
-    // ordering
-    if (sortOrder == 1) {
-      orderDirection = "ASC";
-    } else if (sortOrder == -1) {
-      orderDirection = "DESC";
-    } else {
-      orderDirection = defaultSortDirection;
-    }
-
-    // searching
-    const globalSearchColumns = ["DESIGNATION"];
-    
-    var globalSearchWhereLike = {};
-    if (search && search.trim() != "") {
-      const searchWildCard = {};
-      globalSearchColumns.forEach((column) => {
-        searchWildCard[column] = {
-          [Op.substring]: search,
-        };
-      });
-      globalSearchWhereLike = {
-        [Op.or]: searchWildCard,
-      };
-    }
-
-    const result = await Category.findAndCountAll({
-      limit: parseInt(rows),
-      offset: parseInt(first),
-      order: [[sortModel, orderColumn, orderDirection]],
-      where: {
-        ...globalSearchWhereLike,
-      },
-    });
-    res.status(RESPONSE_CODES.OK).json({
-        statusCode: RESPONSE_CODES.OK,
-        httpStatus: RESPONSE_STATUS.OK,
-        message: "Liste des categories",
-        result: {
-                  data: result.rows,
-                  totalRecords:result.count
-        }
-})
+        })
     }catch(error){
 
         console.log(error)
@@ -179,30 +135,30 @@ const findAllCategory=async(req,res)=>{
 
 }
 /**
- * Fonction pour afficher une donnee se trouvant dans la table category
+ * Fonction pour afficher une donnee se trouvant dans la table pill
  * @param {express} req 
  * @param {express} res
- * @author Nzosaba Milka<santa.milka@mediabox.bi> 
- * @Date le 6/6/2024
+ * @author Nadvaxe<advaxe@freeti.org> 
+ * @Date le 11/09/2024
  */
-const findOneCategory=async(req,res)=>{
+const findOnePill=async(req,res)=>{
 
     try{
 
-        const {ID_CATEGORY}=req.params
-        const category= await Category.findOne({where: {ID_CATEGORY}})
-        if(!category){
-          res.status(RESPONSE_CODES.NOT_FOUND).json({
+        const {ID_PILL}=req.params
+        const pill = await Pill.findById(ID_PILL)
+        if(!pill){
+          return res.status(RESPONSE_CODES.NOT_FOUND).json({
             statusCode: RESPONSE_CODES.NOT_FOUND,
             httpStatus: RESPONSE_STATUS.NOT_FOUND,
-            message: "La categorie non trouvee",
+            message: "La pill non trouvee",
   })
         }
           res.status(RESPONSE_CODES.OK).json({
             statusCode: RESPONSE_CODES.OK,
             httpStatus: RESPONSE_STATUS.OK,
-            message: "categorie trouveee",
-            result: category
+            message: "pill trouveee",
+            result: pill
         })
 
     }catch(error){
@@ -217,28 +173,24 @@ const findOneCategory=async(req,res)=>{
 
 }
 /**
- * Fonction pour supprimer les donnees dans la table category
+ * Fonction pour supprimer les donnees dans la table pill
  * @param {express} req 
  * @param {express} res
- * @author Nzosaba Milka<santa.milka@mediabox.bi> 
- * @Date le 6/6/2024
+ * @author Nadvaxe<advaxe@freeti.org> 
+ * @Date le 11/09/2024
  */
-const deleteCategory=async(req,res)=>{
+const deletePill=async(req,res)=>{
 
   try{
     const {ids}= req.body
     const itemsIds = JSON.parse(ids)
-    await Category.destroy({
-        where: {
-            ID_CATEGORY: {
-                   [Op.in]: itemsIds
-                         }
-             }
-              })
+    await Pill.deleteMany({
+        _id: { $in: itemsIds }
+    })
       res.status(RESPONSE_CODES.OK).json({
         statusCode: RESPONSE_CODES.OK,
         httpStatus: RESPONSE_STATUS.OK,
-        message: "Les categories ont ete supprimés avec success",
+        message: "Les pills ont ete supprimés avec success",
             })
   }
   catch(error){
@@ -255,19 +207,19 @@ const deleteCategory=async(req,res)=>{
 }
 
 /**
- * Fonction pour modifier les donnees dans la table category
+ * Fonction pour modifier les donnees dans la table pill
  * @param {express} req 
  * @param {express} res
- * @author Nzosaba Milka<santa.milka@mediabox.bi> 
- * @Date le 6/6/2024
+ * @author Nadvaxe<advaxe@freeti.org> 
+ * @Date le 11/09/2024
  */
 
-const updateCategory=async(req,res)=>{
+const updatePill=async(req,res)=>{
 
   try{
 
-    const {ID_CATEGORY}= req.params
-    const { DESIGNATION } = req.body;
+    const {ID_PILL}= req.params
+    const { DESIGNATION, PRICE } = req.body;
 
     const data = { ...req.body };
     const validation = new Validation(
@@ -278,12 +230,22 @@ const updateCategory=async(req,res)=>{
           alpha: true,
           length: [2, 20],
         },
+        PRICE: {
+          required: true,
+          alpha: true,
+          length: [2, 25],
+        },
       },
       {
         DESIGNATION: {
           required: "Ce champ est obligatoire",
           alpha: "Doit contenir des caractères alpha numeriques",
           length: "La valeur doit être comprise 2 et 20 caractères",
+        },
+        PRICE: {
+          required: "Ce champ est obligatoire",
+          alpha: "Doit contenir des caractères alpha Numérique",
+          length: "La valeur doit etre entre 2 et 25 caracteres",
         },
       }
     );
@@ -298,16 +260,15 @@ const updateCategory=async(req,res)=>{
       });
     }
 
-    const result = await Category.update(
-      { DESIGNATION },
-      {
-        where: { ID_CATEGORY: ID_CATEGORY },
-      }
+    const result = await Pill.findByIdAndUpdate(
+      ID_PILL,
+      { DESIGNATION, PRICE },
+      { new: true }
     );
     res.status(RESPONSE_CODES.CREATED).json({
       statusCode: RESPONSE_CODES.CREATED,
       httpStatus: RESPONSE_STATUS.CREATED,
-      message: "Categorie mis à jour avec succès",
+      message: "Pill mis à jour avec succès",
       result: result,
     });
 
@@ -326,8 +287,8 @@ const updateCategory=async(req,res)=>{
 
 module.exports={
     createPill,
-    findAllCategory,
-    findOneCategory,
-    deleteCategory,
-    updateCategory
+    findAllPill,
+    findOnePill,
+    deletePill,
+    updatePill
 }

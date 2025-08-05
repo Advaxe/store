@@ -3,9 +3,9 @@
 // import * as Crypto from 'expo-crypto';
 import wait from '../helpers/wait'
 
-// Update this URL with your actual Render.com backend URL
+// Backend API URL configuration
 export const API_URL = process.env.NODE_ENV === 'production'
-          ? "https://your-backend-app-name.onrender.com"  // Replace with your actual backend URL
+          ? "https://store-idcp.onrender.com"
           : "http://localhost:5000";
 const initialOptions = {
           method: 'GET',

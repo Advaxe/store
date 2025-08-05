@@ -1,36 +1,21 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize.js');
-const Syst_provinces = require('./Syst_provinces.js');
+const mongoose = require('mongoose');
 
-const Syst_communes = sequelize.define("syst_communes", {
-          COMMUNE_ID: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    primaryKey: true,
-                    autoIncrement: true
-          },
-          COMMUNE_NAME: {
-                    type: DataTypes.STRING(100),
-                    allowNull: false
-          },
-          PROVINCE_ID : {
-                    type: DataTypes.INTEGER,
-                    allowNull: false
-          },
-          COMMUNE_LATITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
-          COMMUNE_LONGITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
+const communeSchema = new mongoose.Schema({
+    COMMUNE_ID: {
+        type: Number,
+        required: true
+    },
+    COMMUNE_NAME: {
+        type: String,
+        required: true
+    },
+    PROVINCE_ID: {
+        type: Number,
+        required: true
+    }
 }, {
-          freezeTableName: true,
-          tableName: 'syst_communes',
-          timestamps: false,
-})
+    timestamps: false,
+    collection: 'syst_communes'
+});
 
-Syst_communes.belongsTo(Syst_provinces, { foreignKey: "PROVINCE_ID", as: 'province' })
-
-module.exports = Syst_communes
+module.exports = mongoose.model('Commune', communeSchema);

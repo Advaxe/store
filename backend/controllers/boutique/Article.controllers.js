@@ -350,10 +350,34 @@ const updateArticle = async(req,res)=>{
  */
 const getArticlesByCategory1 = async (req,res) => {
   try{
-    const result = await sequelize.query(`SELECT category.ID_CATEGORY,category.DESIGNATION as name,COUNT(article.ID_CATEGORY) as nbr  
-      FROM article join category on article.ID_CATEGORY=category.ID_CATEGORY WHERE 1 GROUP by category.ID_CATEGORY,category.DESIGNATION`,
-      { nest: true,type: QueryTypes.SELECT }
-    );
+    const result = await Article.aggregate([
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'ID_CATEGORY',
+          foreignField: '_id',
+          as: 'category'
+        }
+      },
+      {
+        $unwind: '$category'
+      },
+      {
+        $group: {
+          _id: '$category._id',
+          name: { $first: '$category.DESIGNATION' },
+          nbr: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          ID_CATEGORY: '$_id',
+          name: 1,
+          nbr: 1,
+          _id: 0
+        }
+      }
+    ]);
 
     const totalRecords = result.length;
 
@@ -383,25 +407,20 @@ const allArticlesByCategory = async(req,res) => {
   try{
 
     const {ID_CATEGORY}=req.params
-    const article= await Article.findAll({
-      include: { model: Category, as: "category" },
-      where: {
-        ID_CATEGORY : ID_CATEGORY
-      },
-    });
+    const articles = await Article.find({ ID_CATEGORY: ID_CATEGORY }).populate('ID_CATEGORY', 'DESIGNATION', 'Category');
    
-    if (article) {
+    if (articles && articles.length > 0) {
       res.status(RESPONSE_CODES.OK).json({
         statusCode: RESPONSE_CODES.OK,
         httpStatus: RESPONSE_STATUS.OK,
-        message: "Article trouvé",
-        result: article,
+        message: "Articles trouvés",
+        result: articles,
       });
     } else {
       res.status(RESPONSE_CODES.NOT_FOUND).json({
         statusCode: RESPONSE_CODES.NOT_FOUND,
         httpStatus: RESPONSE_STATUS.NOT_FOUND,
-        message: "L'article non trouvé",
+        message: "Aucun article trouvé pour cette catégorie",
       });
     }
 

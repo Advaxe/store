@@ -1,30 +1,29 @@
-const { createPool } = require('mysql2/promise')
-const dotenv = require('dotenv')
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
-dotenv.config()
-var globalPool = undefined
-const connection = async () => {
-          try {
-                    if(globalPool) return globalPool
-                    globalPool = await createPool({
-                              host: process.env.BD_HOST,
-                              user: process.env.DB_USER,
-                              password: process.env.DB_PASSWORD,
-                              database: process.env.DB_NAME,
-                              port: 3306
-                    })
-                    return globalPool
-          } catch (error) {
-                    throw error
-          }
-}
+dotenv.config();
 
+// This is a simplified query function for MongoDB
+// For complex queries, use the Mongoose models directly
 const query = async (query, values) => {
-          const pool = await connection()
-          return ( await pool.query(query, values))[0]
-}
+    try {
+        // For simple queries, you can use mongoose.connection.db
+        // For complex queries, it's better to use the Mongoose models directly
+        const db = mongoose.connection.db;
+        
+        // This is a basic implementation - you might need to adjust based on your specific needs
+        if (typeof query === 'string') {
+            // If it's a string query, you might want to use native MongoDB driver
+            return await db.collection('your_collection').find(query).toArray();
+        } else {
+            // If it's an object, treat it as a MongoDB query
+            return await db.collection('your_collection').find(query).toArray();
+        }
+    } catch (error) {
+        throw error;
+    }
+};
 
 module.exports = {
-          connection,
-          query
-}
+    query
+};
