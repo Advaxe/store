@@ -1,50 +1,30 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../../utils/sequerize.js');
-const Category = require('./Category.js');
+const mongoose = require('mongoose');
 
-const Article= sequelize.define("article",{
-
-    ARTICLE_ID:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-        autoIncrement: true
-
-    },
+const articleSchema = new mongoose.Schema({
     ID_CATEGORY: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-
+        type: Number,
+        required: true
     },
-    NAME_ARTICLE:{
-        type: DataTypes.STRING(100),
-        allowNull: false
+    NAME_ARTICLE: {
+        type: String,
+        required: true,
+        maxlength: 100
     },
-    PRICE_ARTICLE:{
-        type: DataTypes.FLOAT,
-        allowNull:false
-
+    PRICE_ARTICLE: {
+        type: Number,
+        required: true
     },
-    IMAGE:{
-        type: DataTypes.STRING,
-        allowNull: true,
-        defaultValue: true
+    IMAGE: {
+        type: String,
+        default: null
     },
-    CREATED_AT:{
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW
-
+    CREATED_AT: {
+        type: Date,
+        default: Date.now
     }
-
-    
-},{
-
-    freezeTableName: true,
-    tableName: 'article',
+}, {
     timestamps: false,
-})
+    collection: 'article'
+});
 
-Article.belongsTo(Category,{ foreignKey: "ID_CATEGORY", as: 'category' })
-
-module.exports=Article
+module.exports = mongoose.model('Article', articleSchema);

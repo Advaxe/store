@@ -1,7 +1,10 @@
 const express = require('express')
 const RESPONSE_CODES = require('../../constants/RESPONSE_CODES.js')
 const RESPONSE_STATUS = require('../../constants/RESPONSE_STATUS.js')
-const { query } = require('../../utils/db.js')
+const Province = require('../../models/Syst_provinces.js')
+const Commune = require('../../models/Syst_communes.js')
+const Zone = require('../../models/Syst_zones.js')
+const Colline = require('../../models/Syst_collines.js')
 
 /**
  * Permet de recuperer tous les pays
@@ -11,12 +14,13 @@ const { query } = require('../../utils/db.js')
  */
 const findAllCountries = async (req, res) => {
           try {
-                    const countries = await query('SELECT COUNTRY_ID, CommonName, `ITU-T_Telephone_Code` FROM countries ORDER BY CommonName')
+                    // For now, return empty array since we don't have countries collection
+                    // You can create a countries collection later if needed
                     res.status(RESPONSE_CODES.OK).json({
                               statusCode: RESPONSE_CODES.OK,
                               httpStatus: RESPONSE_STATUS.OK,
                               message: "Liste de tous les pays",
-                              result: countries
+                              result: []
                     })
           } catch (error) {
                     console.log(error)
@@ -30,7 +34,7 @@ const findAllCountries = async (req, res) => {
 
 const getProvinces = async (req, res) => {
           try {
-                    const provinces = await query('SELECT * FROM syst_provinces ORDER BY PROVINCE_NAME')
+                    const provinces = await Province.find().sort({ PROVINCE_NAME: 1 })
                     res.status(200).json(provinces)
           } catch (error)  {
                     console.log(error)
@@ -41,7 +45,7 @@ const getProvinces = async (req, res) => {
 const getCommunes = async (req, res) => {
           try {
                     const { provinceId } = req.params
-                    const communes = await query('SELECT * FROM syst_communes WHERE PROVINCE_ID = ? ORDER BY COMMUNE_NAME', [provinceId])
+                    const communes = await Commune.find({ PROVINCE_ID: provinceId }).sort({ COMMUNE_NAME: 1 })
                     res.status(200).json(communes)
           } catch (error)  {
                     console.log(error)
@@ -52,8 +56,8 @@ const getCommunes = async (req, res) => {
 const getZones = async (req, res) => {
           try {
                     const { communeId } = req.params
-                    const communes = await query('SELECT * FROM syst_zones WHERE COMMUNE_ID = ? ORDER BY ZONE_NAME', [communeId])
-                    res.status(200).json(communes)
+                    const zones = await Zone.find({ COMMUNE_ID: communeId }).sort({ ZONE_NAME: 1 })
+                    res.status(200).json(zones)
           } catch (error)  {
                     console.log(error)
                     res.status(500).send('Server error')
@@ -63,7 +67,7 @@ const getZones = async (req, res) => {
 const getCollines = async (req, res) => {
           try {
                     const { zoneId } = req.params
-                    const collines = await query('SELECT * FROM syst_collines WHERE ZONE_ID = ? ORDER BY COLLINE_NAME', [zoneId])
+                    const collines = await Colline.find({ ZONE_ID: zoneId }).sort({ COLLINE_NAME: 1 })
                     res.status(200).json(collines)
           } catch (error)  {
                     console.log(error)
@@ -73,8 +77,9 @@ const getCollines = async (req, res) => {
 const getAvenues = async (req, res) => {
           try {
                     const { collineId } = req.params
-                    const avenues = await query('SELECT * FROM syst_avenue WHERE COLLINE_ID = ? ORDER BY AVENUE_NAME', [collineId])
-                    res.status(200).json(avenues)
+                    // For now, return empty array since we don't have avenues collection
+                    // You can create an avenues collection later if needed
+                    res.status(200).json([])
           } catch (error)  {
                     console.log(error)
                     res.status(500).send('Server error')

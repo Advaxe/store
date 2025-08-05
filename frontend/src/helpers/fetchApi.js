@@ -3,8 +3,9 @@
 // import * as Crypto from 'expo-crypto';
 import wait from '../helpers/wait'
 
-export const API_URL = false
-          ? "https://dev.mediabox.bi:1058"
+// Backend API URL configuration
+export const API_URL = process.env.NODE_ENV === 'production'
+          ? "https://store-idcp.onrender.com"
           : "http://localhost:5000";
 const initialOptions = {
           method: 'GET',

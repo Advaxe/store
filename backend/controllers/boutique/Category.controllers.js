@@ -3,7 +3,6 @@ const RESPONSE_CODES = require("../../constants/RESPONSE_CODES.js");
 const RESPONSE_STATUS = require("../../constants/RESPONSE_STATUS.js");
 const Category = require("../../models/Boutique/Category.js");
 const Validation = require("../../class/Validation.js");
-const { Op } = require("sequelize");
 
 
 /**
@@ -47,7 +46,7 @@ const createCategory=async(req,res)=>{
                                         result: errors
                               })
         }
-        const result=await Category.create({DESIGNATION});
+        const result = await Category.create({ DESIGNATION });
         res.status(RESPONSE_CODES.CREATED).json({
             statusCode: RESPONSE_CODES.CREATED,
             httpStatus: RESPONSE_STATUS.CREATED,
@@ -76,85 +75,42 @@ const findAllCategory=async(req,res)=>{
 
     try{
         const { rows = 10, first = 0, sortField, sortOrder, search } = req.query
-        const defaultSortDirection = "DESC"
+        const limit = parseInt(rows);
+        const skip = parseInt(first);
 
-        const sortColumns = {
-            category: {
-                      as: "category",
-                      fields: {
-                        ID_CATEGORY: 'ID_CATEGORY',
-                        DESIGNATION: 'DESIGNATION',
-                        CREATED_AT: 'CREATED_AT',
-                      }
+        // Build sort object
+        let sort = {};
+        if (sortField) {
+            const sortDirection = sortOrder == 1 ? 1 : -1;
+            sort[sortField] = sortDirection;
+        } else {
+            sort = { CREATED_AT: -1 }; // Default sort by creation date descending
+        }
+
+        // Build search query
+        let query = {};
+        if (search && search.trim() !== "") {
+            query.DESIGNATION = { $regex: search, $options: 'i' };
+        }
+
+        // Execute query with pagination
+        const [categories, totalCount] = await Promise.all([
+            Category.find(query)
+                .sort(sort)
+                .limit(limit)
+                .skip(skip),
+            Category.countDocuments(query)
+        ]);
+
+        res.status(RESPONSE_CODES.OK).json({
+            statusCode: RESPONSE_CODES.OK,
+            httpStatus: RESPONSE_STATUS.OK,
+            message: "Liste des categories",
+            result: {
+                data: categories,
+                totalRecords: totalCount
             }
-  }
-  var orderColumn, orderDirection
-
-
-    // sorting
-    var sortModel;
-    if (sortField) {
-      for (let key in sortColumns) {
-        if (sortColumns[key].fields.hasOwnProperty(sortField)) {
-          sortModel = {
-            model: key,
-            as: sortColumns[key].as,
-          };
-          orderColumn = sortColumns[key].fields[sortField];
-          break;
-        }
-      }
-    }
-    if (!orderColumn || !sortModel) {
-      orderColumn = sortColumns.category.fields.CREATED_AT;
-      sortModel = {
-        model: "category",
-        as: sortColumns.category.as,
-      };
-    }
-
-    // ordering
-    if (sortOrder == 1) {
-      orderDirection = "ASC";
-    } else if (sortOrder == -1) {
-      orderDirection = "DESC";
-    } else {
-      orderDirection = defaultSortDirection;
-    }
-
-    // searching
-    const globalSearchColumns = ["DESIGNATION"];
-    
-    var globalSearchWhereLike = {};
-    if (search && search.trim() != "") {
-      const searchWildCard = {};
-      globalSearchColumns.forEach((column) => {
-        searchWildCard[column] = {
-          [Op.substring]: search,
-        };
-      });
-      globalSearchWhereLike = {
-        [Op.or]: searchWildCard,
-      };
-    }
-
-    const result = await Category.findAndCountAll({
-      limit: parseInt(rows),
-      offset: parseInt(first),
-      order: [[sortModel, orderColumn, orderDirection]],
-      where: {
-        ...globalSearchWhereLike,
-      },
-    });
-    res.status(RESPONSE_CODES.OK).json({
-        statusCode: RESPONSE_CODES.OK,
-        httpStatus: RESPONSE_STATUS.OK,
-        message: "Liste des categories",
-        result: {
-                  data: result.rows,
-                  totalRecords:result.count
-        }
-})
+        })
     }catch(error){
 
         console.log(error)
@@ -180,9 +136,9 @@ const findOneCategory=async(req,res)=>{
     try{
 
         const {ID_CATEGORY}=req.params
-        const category= await Category.findOne({where: {ID_CATEGORY}})
+        const category = await Category.findById(ID_CATEGORY)
         if(!category){
-          res.status(RESPONSE_CODES.NOT_FOUND).json({
+          return res.status(RESPONSE_CODES.NOT_FOUND).json({
             statusCode: RESPONSE_CODES.NOT_FOUND,
             httpStatus: RESPONSE_STATUS.NOT_FOUND,
             message: "La categorie non trouvee",
@@ -218,13 +174,9 @@ const deleteCategory=async(req,res)=>{
   try{
     const {ids}= req.body
     const itemsIds = JSON.parse(ids)
-    await Category.destroy({
-        where: {
-            ID_CATEGORY: {
-                   [Op.in]: itemsIds
-                         }
-             }
-              })
+    await Category.deleteMany({
+        _id: { $in: itemsIds }
+    })
       res.status(RESPONSE_CODES.OK).json({
         statusCode: RESPONSE_CODES.OK,
         httpStatus: RESPONSE_STATUS.OK,
@@ -288,11 +240,10 @@ const updateCategory=async(req,res)=>{
       });
     }
 
-    const result = await Category.update(
+    const result = await Category.findByIdAndUpdate(
+      ID_CATEGORY,
       { DESIGNATION },
-      {
-        where: { ID_CATEGORY: ID_CATEGORY },
-      }
+      { new: true }
     );
     res.status(RESPONSE_CODES.CREATED).json({
       statusCode: RESPONSE_CODES.CREATED,

@@ -1,45 +1,36 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize.js');
-const Syst_collines = require('./Syst_collines.js');
+const mongoose = require('mongoose');
 
-const Utilisateur = sequelize.define("utilisateurs", {
-          id: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    primaryKey: true,
-                    autoIncrement: true
-          },
+const utilisateurSchema = new mongoose.Schema({
           nom: {
-                    type: DataTypes.STRING(50),
-                    allowNull: false
+                    type: String,
+                    required: true,
+                    maxlength: 50
           },
           prenom: {
-                    type: DataTypes.STRING(50),
-                    allowNull: false
+                    type: String,
+                    required: true,
+                    maxlength: 50
           },
           id_colline: {
-                    type: DataTypes.INTEGER(4),
-                    allowNull: false,
+                    type: Number,
+                    required: true
           },
           image: {
-                    type: DataTypes.STRING(255),
-                    allowNull: false
+                    type: String,
+                    required: true,
+                    maxlength: 255
           },
           date_naissance: {
-                    type: DataTypes.DATE,
-                    allowNull: false
+                    type: Date,
+                    required: true
           },
           date_insertion: {
-                    type: DataTypes.DATE,
-                    allowNull: false,
-                    defaultValue: DataTypes.NOW
+                    type: Date,
+                    default: Date.now
           }
 }, {
-          freezeTableName: true,
-          tableName: 'utilisateurs',
-          timestamps: false
-})
+          timestamps: false,
+          collection: 'utilisateurs'
+});
 
-Utilisateur.belongsTo(Syst_collines, { foreignKey: "id_colline", as: 'colline' })
-
-module.exports = Utilisateur
+module.exports = mongoose.model('Utilisateur', utilisateurSchema);

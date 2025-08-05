@@ -1,42 +1,17 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize.js');
+const mongoose = require('mongoose');
 
-const Syst_provinces = sequelize.define("syst_provinces", {
-          PROVINCE_ID: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    primaryKey: true,
-                    autoIncrement: true
-          },
-          PROVINCE_NAME: {
-                    type: DataTypes.STRING(100),
-                    allowNull: false
-          },
-          OBJECTIF: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false
-          },
-          PROVINCE_LATITUDE : {
-                    type: DataTypes.INTEGER,
-                    allowNull: false
-          },
-          PROVINCE_LATITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
-          PROVINCE_LONGITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
-          PAYS_CODE : {
-                    type: DataTypes.STRING(255),
-                    allowNull: false
-          },
+const provinceSchema = new mongoose.Schema({
+    PROVINCE_ID: {
+        type: Number,
+        required: true
+    },
+    PROVINCE_NAME: {
+        type: String,
+        required: true
+    }
 }, {
-          freezeTableName: true,
-          tableName: 'syst_provinces',
-          timestamps: false,
-})
+    timestamps: false,
+    collection: 'syst_provinces'
+});
 
-
-module.exports = Syst_provinces
+module.exports = mongoose.model('Province', provinceSchema);

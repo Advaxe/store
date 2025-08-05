@@ -1,36 +1,21 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../utils/sequerize.js');
-const Syst_zones = require('./Syst_zones.js');
+const mongoose = require('mongoose');
 
-const Syst_collines = sequelize.define("syst_collines", {
-          COLLINE_ID: {
-                    type: DataTypes.INTEGER,
-                    allowNull: false,
-                    primaryKey: true,
-                    autoIncrement: true
-          },
-          COLLINE_NAME: {
-                    type: DataTypes.STRING(100),
-                    allowNull: false
-          },
-          ZONE_ID : {
-                    type: DataTypes.INTEGER,
-                    allowNull: false
-          },
-          LATITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
-          LONGITUDE : {
-                    type: DataTypes.FLOAT,
-                    allowNull: false
-          },
+const collineSchema = new mongoose.Schema({
+    COLLINE_ID: {
+        type: Number,
+        required: true
+    },
+    COLLINE_NAME: {
+        type: String,
+        required: true
+    },
+    ZONE_ID: {
+        type: Number,
+        required: true
+    }
 }, {
-          freezeTableName: true,
-          tableName: 'syst_collines',
-          timestamps: false,
-})
+    timestamps: false,
+    collection: 'syst_collines'
+});
 
-Syst_collines.belongsTo(Syst_zones, { foreignKey: "ZONE_ID", as: 'zone' })
-
-module.exports = Syst_collines
+module.exports = mongoose.model('Colline', collineSchema);
